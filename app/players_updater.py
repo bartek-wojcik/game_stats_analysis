@@ -25,6 +25,11 @@ class PlayersUpdater:
         for player in self.players:
             PlayersUpdater.update_player_stats(player.id)
 
+    def update_players_achievements(self):
+        for game in self.games:
+            for player in self.players:
+                PlayersUpdater.__get_player_achievements(player.id, game.id)
+
     @staticmethod
     def update_nicknames_and_avatars(list_ids: List[str]) -> bool:
         chunks = len(list_ids) // 101 + 1
@@ -93,9 +98,11 @@ class PlayersUpdater:
         data = result.json()
         achievements = data['playerstats']['achievements']
         for achievement in achievements:
-            PlayerAchievement(
+            PlayerAchievement.objects.update_or_create(
                 player_id=player_id,
                 achievement__game_id=game_id,
                 achievement__name=achievement['apiname'],
-                achieved=achievement['achieved'],
-            ).save()
+                defaults={
+                    'achieved': achievement['achieved'],
+                }
+            )

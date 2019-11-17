@@ -9,4 +9,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         updater = PlayersUpdater()
         updater.update_players_stats()
+        updater.update_players_achievements()
         self.stdout.write(self.style.SUCCESS('Data successfully updated'))
