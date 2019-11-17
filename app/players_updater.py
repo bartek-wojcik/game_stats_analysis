@@ -14,12 +14,14 @@ _PLAYER_ACHIEVEMENTS_API = 'http://api.steampowered.com/ISteamUserStats/GetPlaye
 
 class PlayersUpdater:
 
-    @staticmethod
-    def update_all_players():
-        players = Player.objects.all()
-        list_ids = players.values_list('id', flat=True)
-        PlayersUpdater.update_nicknames_and_avatars(list_ids)
-        for player in players:
+    players = Player.objects.all()
+    list_ids = players.values_list('id', flat=True)
+
+    def update_players(self):
+        PlayersUpdater.update_nicknames_and_avatars(self.list_ids)
+
+    def update_players_stats(self):
+        for player in self.players:
             PlayersUpdater.update_player_stats(player.id)
 
     @staticmethod

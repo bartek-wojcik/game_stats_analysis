@@ -59,7 +59,7 @@ class PlayerStats(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     time = models.DurationField()
-    date = models.DateTimeField(default=datetime.today)
+    date = models.DateField(default=date.today)
     stats = JSONField()
 
     def __str__(self):
