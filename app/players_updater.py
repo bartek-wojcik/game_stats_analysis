@@ -57,7 +57,7 @@ class PlayersUpdater:
             return {}
         playtime_data = data['response']['games']
         for playtime in playtime_data:
-            PlayersUpdater.__create_player_stats(playtime['appid'], playtime['playtime_forever'])
+            PlayersUpdater.__create_player_stats(player_id, playtime['appid'], playtime['playtime_forever'])
         return True
 
     @staticmethod

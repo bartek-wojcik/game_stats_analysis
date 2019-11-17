@@ -20,11 +20,6 @@ class Player(models.Model):
     nickname = models.CharField(max_length=100, blank=True)
     avatar = models.URLField(blank=True)
 
-    def save(self, *args, **kwargs):
-        from app.players_updater import PlayersUpdater
-        PlayersUpdater.update_nicknames_and_avatars([self.id])
-        super(Player, self).save(*args, **kwargs)
-
     def __str__(self):
         return self.nickname
 
