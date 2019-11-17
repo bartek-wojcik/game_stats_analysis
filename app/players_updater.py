@@ -3,7 +3,7 @@ from datetime import timedelta
 from typing import List, Dict
 import requests
 from django.conf import settings
-from app.models import Player, Game, PlayerStats
+from app.models import Player, Game, PlayerStats, PlayerAchievement
 import numpy as np
 
 _PLAYER_API = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={}&steamids={}'
@@ -15,6 +15,7 @@ _PLAYER_ACHIEVEMENTS_API = 'http://api.steampowered.com/ISteamUserStats/GetPlaye
 class PlayersUpdater:
 
     players = Player.objects.all()
+    games = Game.objects.all()
     list_ids = players.values_list('id', flat=True)
 
     def update_players(self):
@@ -84,3 +85,17 @@ class PlayersUpdater:
         data = result.json()
         stats = data['playerstats']['stats']
         return stats
+
+    @staticmethod
+    def __get_player_achievements(player_id: string, game_id: int):
+        url = _PLAYER_ACHIEVEMENTS_API.format(game_id, settings.STEAM_API_KEY, player_id)
+        result = requests.get(url)
+        data = result.json()
+        achievements = data['playerstats']['achievements']
+        for achievement in achievements:
+            PlayerAchievement(
+                player_id=player_id,
+                achievement__game_id=game_id,
+                achievement__name=achievement['apiname'],
+                achieved=achievement['achieved'],
+            ).save()

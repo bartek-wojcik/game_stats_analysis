@@ -44,12 +44,16 @@ class Achievement(models.Model):
     def __str__(self):
         return self.game.__str__() + ' ' + self.achievement
 
+    class Meta:
+        index_together = (
+            ('game', 'achievement')
+        )
+
 
 class PlayerAchievement(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     achievement = models.ForeignKey(Achievement, on_delete=models.CASCADE)
     achieved = models.BooleanField()
-    unlock_time = models.DurationField()
 
     def __str__(self):
         return self.player.__str__() + ' ' + self.achievement.__str__()
