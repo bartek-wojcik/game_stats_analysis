@@ -4,6 +4,7 @@ from typing import List, Dict
 import requests
 from django.conf import settings
 from app.models import Player, Game, PlayerStats
+import numpy as np
 
 _PLAYER_API = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={}&steamids={}'
 _PLAYER_STATS_API = 'http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid={}&key={}&steamid={}'
@@ -17,7 +18,9 @@ class PlayersUpdater:
     def update_all_players():
         players = Player.objects.all()
         list_ids = players.values_list('id', flat=True)
-        PlayersUpdater.update_nicknames_and_avatars(list_ids)
+        chunks = len(list_ids) // 101 + 1
+        for part in np.array_split(list_ids, chunks):
+            PlayersUpdater.update_nicknames_and_avatars(part)
         for player in players:
             PlayersUpdater.update_player_stats(player.id)
 
