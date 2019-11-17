@@ -18,23 +18,23 @@ class PlayersUpdater:
     def update_all_players():
         players = Player.objects.all()
         list_ids = players.values_list('id', flat=True)
-        chunks = len(list_ids) // 101 + 1
-        for part in np.array_split(list_ids, chunks):
-            PlayersUpdater.update_nicknames_and_avatars(part)
+        PlayersUpdater.update_nicknames_and_avatars(list_ids)
         for player in players:
             PlayersUpdater.update_player_stats(player.id)
 
     @staticmethod
     def update_nicknames_and_avatars(list_ids: List[str]) -> bool:
-        ids = ','.join(list_ids)
-        url = _PLAYER_API.format(settings.STEAM_API_KEY, ids)
-        result = requests.get(url)
-        data = result.json()
-        players = data['response']['players']
-        if not players:
-            return False
-        for player in players:
-            PlayersUpdater.__update_player(player)
+        chunks = len(list_ids) // 101 + 1
+        for part in np.array_split(list_ids, chunks):
+            ids = ','.join(part)
+            url = _PLAYER_API.format(settings.STEAM_API_KEY, ids)
+            result = requests.get(url)
+            data = result.json()
+            players = data['response']['players']
+            if not players:
+                continue
+            for player in players:
+                PlayersUpdater.__update_player(player)
         return True
 
     @staticmethod
