@@ -88,7 +88,7 @@ class PlayersUpdater:
         if not result:
             return []
         data = result.json()
-        stats = data['playerstats']['stats']
+        stats = data['playerstats'].get('stats', [])
         return stats
 
     @staticmethod
