@@ -101,7 +101,7 @@ class PlayersUpdater:
             PlayerAchievement.objects.update_or_create(
                 player_id=player_id,
                 achievement__game_id=game_id,
-                achievement__name=achievement['apiname'],
+                achievement__achievement=achievement['apiname'],
                 defaults={
                     'achieved': achievement['achieved'],
                 }
