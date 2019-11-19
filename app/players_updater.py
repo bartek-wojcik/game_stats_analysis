@@ -97,13 +97,16 @@ class PlayersUpdater:
         url = _PLAYER_ACHIEVEMENTS_API.format(game_id, settings.STEAM_API_KEY, player_id)
         result = requests.get(url)
         data = result.json()
-        achievements = data['playerstats'].get('achievements', [])
-        for achievement in achievements:
-            achievemnt_id = next(filter(lambda a: a.achievement == achievement['apiname'], game_achievements)).id
+        achievement_map = {}
+        api_achievements = data['playerstats'].get('achievements', [])
+        for achievement in api_achievements:
+            achievement_map[achievement['apiname']] = achievement['achieved']
+        for achievement in game_achievements:
             PlayerAchievement.objects.update_or_create(
                 player_id=player_id,
-                achievement_id=achievemnt_id,
+                achievement=achievement,
                 defaults={
-                    'achieved': achievement['achieved'],
+                    'achieved': achievement_map.get(achievement.name, 0),
                 }
             )
+

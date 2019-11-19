@@ -38,15 +38,15 @@ class GlobalStats(models.Model):
 
 class Achievement(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    achievement = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     global_percent = models.FloatField()
 
     def __str__(self):
-        return self.game.__str__() + ' ' + self.achievement
+        return self.game.__str__() + ' ' + self.name
 
     class Meta:
         index_together = (
-            ('game', 'achievement')
+            ('game', 'name')
         )
 
 
