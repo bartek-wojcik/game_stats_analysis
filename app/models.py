@@ -40,7 +40,6 @@ class Achievement(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     achievement = models.CharField(max_length=200)
     global_percent = models.FloatField()
-    icon = models.URLField()
 
     def __str__(self):
         return self.game.__str__() + ' ' + self.achievement

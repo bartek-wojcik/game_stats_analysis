@@ -3,7 +3,7 @@ from datetime import timedelta
 from typing import List, Dict
 import requests
 from django.conf import settings
-from app.models import Player, Game, PlayerStats, PlayerAchievement
+from app.models import Player, Game, PlayerStats, PlayerAchievement, Achievement
 import numpy as np
 
 _PLAYER_API = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={}&steamids={}'
@@ -27,8 +27,9 @@ class PlayersUpdater:
 
     def update_players_achievements(self):
         for game in self.games:
+            game_achievements = list(Achievement.objects.filter(game=game))
             for player in self.players:
-                PlayersUpdater.__get_player_achievements(player.id, game.id)
+                PlayersUpdater.__get_player_achievements(player.id, game.id, game_achievements)
 
     @staticmethod
     def update_nicknames_and_avatars(list_ids: List[str]) -> bool:
@@ -92,16 +93,16 @@ class PlayersUpdater:
         return stats
 
     @staticmethod
-    def __get_player_achievements(player_id: string, game_id: int):
+    def __get_player_achievements(player_id: string, game_id: int, game_achievements: []):
         url = _PLAYER_ACHIEVEMENTS_API.format(game_id, settings.STEAM_API_KEY, player_id)
         result = requests.get(url)
         data = result.json()
         achievements = data['playerstats'].get('achievements', [])
         for achievement in achievements:
+            achievemnt_id = next(filter(lambda a: a.achievement == achievement['apiname'], game_achievements)).id
             PlayerAchievement.objects.update_or_create(
                 player_id=player_id,
-                achievement__game_id=game_id,
-                achievement__achievement=achievement['apiname'],
+                achievement_id=achievemnt_id,
                 defaults={
                     'achieved': achievement['achieved'],
                 }

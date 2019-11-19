@@ -34,7 +34,6 @@ class GamesUpdater:
                 achievement=achievement['name'],
                 defaults={
                     'global_percent': achievement['percent'],
-                    'icon': achievement['icon']
                 },
             )
         return True
