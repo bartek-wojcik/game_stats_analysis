@@ -31,7 +31,7 @@ class GamesUpdater:
         for achievement in achievements:
             Achievement.objects.update_or_create(
                 game_id=game_id,
-                achievement=achievement['name'],
+                name=achievement['name'],
                 defaults={
                     'global_percent': achievement['percent'],
                 },
