@@ -102,11 +102,12 @@ class PlayersUpdater:
         for achievement in api_achievements:
             achievement_map[achievement['apiname']] = achievement['achieved']
         for achievement in game_achievements:
-            PlayerAchievement.objects.update_or_create(
-                player_id=player_id,
-                achievement=achievement,
-                defaults={
-                    'achieved': achievement_map.get(achievement.name, 0),
-                }
-            )
+            if achievement.name in achievement_map:
+                PlayerAchievement.objects.update_or_create(
+                    player_id=player_id,
+                    achievement=achievement,
+                    defaults={
+                        'achieved': achievement_map[achievement.name],
+                    }
+                )
 
