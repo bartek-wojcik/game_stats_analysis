@@ -5,6 +5,9 @@ import requests
 from django.conf import settings
 from app.models import Player, Game, PlayerStats, PlayerAchievement, Achievement
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 _PLAYER_API = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={}&steamids={}'
 _PLAYER_STATS_API = 'http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid={}&key={}&steamid={}'
@@ -23,13 +26,19 @@ class PlayersUpdater:
 
     def update_players_stats(self):
         for player in self.players:
-            PlayersUpdater.update_player_stats(player.id)
+            try:
+                PlayersUpdater.update_player_stats(player.id)
+            except Exception as e:
+                logger.error('Error occurred while fetching player stats (ID: {})'.format(player.id), e)
 
     def update_players_achievements(self):
         for game in self.games:
             game_achievements = list(Achievement.objects.filter(game=game))
             for player in self.players:
-                PlayersUpdater.__get_player_achievements(player.id, game.id, game_achievements)
+                try:
+                    PlayersUpdater.__get_player_achievements(player.id, game.id, game_achievements)
+                except Exception as e:
+                    logger.error('Error occurred while fetching player achievement (Player ID: {} Game ID)'.format(player.id, game.id), e)
 
     @staticmethod
     def update_nicknames_and_avatars(list_ids: List[str]) -> bool:
@@ -63,7 +72,7 @@ class PlayersUpdater:
         result = requests.get(url)
         data = result.json()
         if not data['response']:
-            return {}
+            return False
         playtime_data = data['response'].get('games', [])
         for playtime in playtime_data:
             PlayersUpdater.__create_player_stats(player_id, playtime['appid'], playtime['playtime_forever'])
