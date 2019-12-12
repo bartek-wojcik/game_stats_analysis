@@ -7,7 +7,7 @@ class PlayerSerializer(ModelSerializer):
 
     class Meta:
         model = Player
-        fields = ['id']
+        fields = '__all__'
 
 
 class GlobalStatsSerializer(ModelSerializer):
