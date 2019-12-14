@@ -1,4 +1,6 @@
+from django_filters import FilterSet
 from rest_framework import status
+from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -7,24 +9,22 @@ from app.serializers import PlayerSerializer, GlobalStatsSerializer, GameSeriali
     PlayerStatsSerializer
 
 
-class PlayerView(APIView):
+class RequiredSearchFilter(SearchFilter):
 
-    def get(self, request):
-        players = Player.objects.all()
-        search_filter = request.query_params.get('search', None)
-        if search_filter:
-            players = players.filter(nickname__search=search_filter)[:10]
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        serializer = PlayerSerializer(players, many=True)
-        return Response(serializer.data)
+    def filter_queryset(self, request, queryset, view):
+        search_terms = self.get_search_terms(request)
 
-    def post(self, request):
-        serializer = PlayerSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not search_terms:
+            return queryset.none()
+
+        return super().filter_queryset(request, queryset, view)
+
+
+class PlayerViewSet(ModelViewSet):
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
+    filter_backends = [RequiredSearchFilter]
+    search_fields = ['nickname']
 
 
 class GlobalStatsView(APIView):

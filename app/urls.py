@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .views import PlayerView, GlobalStatsView, GamesViewSet, AchievementView, PlayerStatsView
+from .views import GlobalStatsView, GamesViewSet, AchievementView, PlayerStatsView, PlayerViewSet
 
 urlpatterns = [
-    path('players', PlayerView.as_view()),
+    path('players', PlayerViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('globalstats', GlobalStatsView.as_view()),
     path('playerstats', PlayerStatsView.as_view()),
     path('games', GamesViewSet.as_view({'get': 'list'})),
