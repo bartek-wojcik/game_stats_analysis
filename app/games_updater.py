@@ -1,10 +1,13 @@
 from datetime import date
 import requests
+from django.conf import settings
+
 from app.models import Achievement, GlobalStats, Game
 
 _ERROR_RESULT = 42
 _CURRENT_PLAYERS_API = 'http://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={}'
 _ACHIEVEMENTS_API = 'http://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid={}'
+_ACHIEVEMENTS_INFO_API = 'http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v0002/?key={}}&appid={}'
 
 
 class GamesUpdater:
@@ -14,11 +17,29 @@ class GamesUpdater:
         games = Game.objects.all()
         for game in games:
             GamesUpdater.update_game(game)
+            GamesUpdater.update_achievement_info(game.id)
 
     @staticmethod
     def update_game(game: Game):
         GamesUpdater.get_global_stats(game)
         GamesUpdater.update_achievements(game.id)
+
+    @staticmethod
+    def update_achievement_info(game_id: int):
+        url = _ACHIEVEMENTS_INFO_API.format(settings.STEAM_API_KEY, game_id)
+        result = requests.get(url)
+        data = result.json()
+        achievements = data['game']['availableGameStats']['achievements']
+        for achievement in achievements:
+            Achievement.objects.update_or_create(
+                game_id=game_id,
+                name=achievement['name'],
+                defaults={
+                    'icon': achievement['icon'],
+                    'display_name': achievement['displayName'],
+                    'description': achievement['description'],
+                },
+            )
 
     @staticmethod
     def update_achievements(game_id: int):

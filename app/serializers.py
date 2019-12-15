@@ -42,4 +42,4 @@ class PlayerAchievementSerializer(ModelSerializer):
 
     class Meta:
         model = PlayerAchievement
-        fields = '__all__'
+        fields = ['achievement', 'achieved']

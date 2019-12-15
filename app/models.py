@@ -39,7 +39,10 @@ class GlobalStats(models.Model):
 class Achievement(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
-    global_percent = models.FloatField()
+    global_percent = models.FloatField(default=0)
+    icon = models.URLField(null=True, blank=True)
+    description = models.CharField(max_length=200, null=True, blank=True)
+    display_name = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.game.__str__() + ' ' + self.name

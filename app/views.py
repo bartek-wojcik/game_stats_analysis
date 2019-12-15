@@ -34,6 +34,8 @@ class GlobalStatsView(APIView):
         game_filter = request.query_params.get('game', None)
         if game_filter:
             stats = stats.filter(game=game_filter)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         serializer = GlobalStatsSerializer(stats, many=True)
         return Response(serializer.data)
 
@@ -63,7 +65,7 @@ class PlayerStatsView(APIView):
         player_filter = request.query_params.get('player', None)
         if not game_filter or not player_filter:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        stats = PlayerStats.objects.filter(game=game_filter, player=player_filter)
+        stats = PlayerStats.objects.filter(game=game_filter, player=player_filter).order_by('date')
         serializer = PlayerStatsSerializer(stats, many=True)
         return Response(serializer.data)
 
