@@ -4,9 +4,9 @@ from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from app.models import Player, GlobalStats, Game, Achievement, PlayerStats
+from app.models import Player, GlobalStats, Game, Achievement, PlayerStats, PlayerAchievement
 from app.serializers import PlayerSerializer, GlobalStatsSerializer, GameSerializer, AchievementSerializer, \
-    PlayerStatsSerializer
+    PlayerStatsSerializer, PlayerAchievementSerializer
 
 
 class RequiredSearchFilter(SearchFilter):
@@ -59,12 +59,23 @@ class AchievementView(APIView):
 class PlayerStatsView(APIView):
 
     def get(self, request):
-        stats = PlayerStats.objects.all()
         game_filter = request.query_params.get('game', None)
         player_filter = request.query_params.get('player', None)
         if not game_filter or not player_filter:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        stats = stats.filter(game=game_filter, player=player_filter)
+        stats = PlayerStats.objects.filter(game=game_filter, player=player_filter)
         serializer = PlayerStatsSerializer(stats, many=True)
+        return Response(serializer.data)
+
+
+class PlayerAchievementView(APIView):
+
+    def get(self, request):
+        game_filter = request.query_params.get('game', None)
+        player_filter = request.query_params.get('player', None)
+        if not game_filter or not player_filter:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        achievements = PlayerAchievement.objects.filter(achievement__game=game_filter, player=player_filter)
+        serializer = PlayerAchievementSerializer(achievements, many=True)
         return Response(serializer.data)
 

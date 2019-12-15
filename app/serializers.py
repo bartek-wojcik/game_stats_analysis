@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
-from app.models import Player, GlobalStats, Game, Achievement, PlayerStats
+from app.models import Player, GlobalStats, Game, Achievement, PlayerStats, PlayerAchievement
 
 
 class PlayerSerializer(ModelSerializer):
@@ -35,4 +35,11 @@ class PlayerStatsSerializer(ModelSerializer):
 
     class Meta:
         model = PlayerStats
+        fields = '__all__'
+
+
+class PlayerAchievementSerializer(ModelSerializer):
+
+    class Meta:
+        model = PlayerAchievement
         fields = '__all__'
