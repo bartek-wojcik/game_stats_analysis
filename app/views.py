@@ -17,7 +17,7 @@ class RequiredSearchFilter(SearchFilter):
         if not search_terms:
             return queryset.none()
 
-        return super().filter_queryset(request, queryset, view)
+        return super().filter_queryset(request, queryset, view)[:10]
 
 
 class PlayerViewSet(ModelViewSet):
