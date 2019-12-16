@@ -7,7 +7,7 @@ from app.models import Achievement, GlobalStats, Game
 _ERROR_RESULT = 42
 _CURRENT_PLAYERS_API = 'http://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={}'
 _ACHIEVEMENTS_API = 'http://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid={}'
-_ACHIEVEMENTS_INFO_API = 'http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v0002/?key={}}&appid={}'
+_ACHIEVEMENTS_INFO_API = 'http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v0002/?key={}&appid={}'
 
 
 class GamesUpdater:
@@ -29,6 +29,8 @@ class GamesUpdater:
         url = _ACHIEVEMENTS_INFO_API.format(settings.STEAM_API_KEY, game_id)
         result = requests.get(url)
         data = result.json()
+        if not data:
+            return
         achievements = data['game']['availableGameStats']['achievements']
         for achievement in achievements:
             Achievement.objects.update_or_create(

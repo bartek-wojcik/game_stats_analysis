@@ -63,9 +63,12 @@ class PlayerStatsView(APIView):
     def get(self, request):
         game_filter = request.query_params.get('game', None)
         player_filter = request.query_params.get('player', None)
+        last = request.query_params.get('last', None)
         if not game_filter or not player_filter:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         stats = PlayerStats.objects.filter(game=game_filter, player=player_filter).order_by('date')
+        if last:
+            stats = stats.last()
         serializer = PlayerStatsSerializer(stats, many=True)
         return Response(serializer.data)
 
