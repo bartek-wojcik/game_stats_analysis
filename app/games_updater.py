@@ -31,15 +31,19 @@ class GamesUpdater:
         data = result.json()
         if not data:
             return
-        achievements = data['game']['availableGameStats']['achievements']
+        achievements = data['game'].get('availableGameStats', {}).get('achievements', [])
         for achievement in achievements:
+            name = achievement['displayName']
+            description = achievement.get('description', None)
+            if not description:
+                description = name
             Achievement.objects.update_or_create(
                 game_id=game_id,
                 name=achievement['name'],
                 defaults={
                     'icon': achievement['icon'],
-                    'display_name': achievement['displayName'],
-                    'description': achievement['description'],
+                    'display_name': name,
+                    'description': description,
                 },
             )
 
