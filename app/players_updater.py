@@ -71,9 +71,7 @@ class PlayersUpdater:
         url = _PLAYER_GAMES_API.format(settings.STEAM_API_KEY, player_id)
         result = requests.get(url)
         data = result.json()
-        if not data['response']:
-            return False
-        playtime_data = data['response'].get('games', [])
+        playtime_data = data.get(['response'], {}).get('games', [])
         for playtime in playtime_data:
             PlayersUpdater.__create_player_stats(player_id, playtime['appid'], playtime['playtime_forever'])
         return True
