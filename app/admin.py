@@ -10,11 +10,15 @@ class GameFilter(admin.ModelAdmin):
     list_filter = ('game__name',)
 
 
+class PlayerAndGameFilter(GameFilter):
+    search_fields = ('player__nickname',)
+
+
 admin.site.register(GlobalStats, GameFilter)
-admin.site.register(PlayerStats, GameFilter)
+admin.site.register(PlayerStats, PlayerAndGameFilter)
 admin.site.register(Player)
 admin.site.register(Game)
-admin.site.register(Achievement)
+admin.site.register(Achievement, GameFilter)
 admin.site.register(PlayerAchievement)
 
 admin.site.site_header = 'Game Stats Analysis'
