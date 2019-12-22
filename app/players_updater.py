@@ -48,7 +48,7 @@ class PlayersUpdater:
             url = _PLAYER_API.format(settings.STEAM_API_KEY, ids)
             result = requests.get(url)
             data = result.json()
-            players = data['response']['players']
+            players = data.get('response', {}).get('players', None)
             if not players:
                 continue
             for player in players:
@@ -71,7 +71,7 @@ class PlayersUpdater:
         url = _PLAYER_GAMES_API.format(settings.STEAM_API_KEY, player_id)
         result = requests.get(url)
         data = result.json()
-        playtime_data = data.get(['response'], {}).get('games', [])
+        playtime_data = data.get('response', {}).get('games', [])
         for playtime in playtime_data:
             PlayersUpdater.__create_player_stats(player_id, playtime['appid'], playtime['playtime_forever'])
         return True
@@ -96,7 +96,7 @@ class PlayersUpdater:
         if not result:
             return []
         data = result.json()
-        stats = data['playerstats'].get('stats', [])
+        stats = data.get('playerstats', {}).get('stats', [])
         return stats
 
     @staticmethod
@@ -105,7 +105,7 @@ class PlayersUpdater:
         result = requests.get(url)
         data = result.json()
         achievement_map = {}
-        api_achievements = data['playerstats'].get('achievements', [])
+        api_achievements = data('playerstats', {}).get('achievements', [])
         for achievement in api_achievements:
             achievement_map[achievement['apiname']] = achievement['achieved']
         for achievement in game_achievements:

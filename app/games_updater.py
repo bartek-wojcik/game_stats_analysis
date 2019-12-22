@@ -31,7 +31,7 @@ class GamesUpdater:
         data = result.json()
         if not data:
             return
-        achievements = data['game'].get('availableGameStats', {}).get('achievements', [])
+        achievements = data.get('game', {}).get('availableGameStats', {}).get('achievements', [])
         for achievement in achievements:
             name = achievement['displayName']
             description = achievement.get('description', None)
@@ -54,7 +54,7 @@ class GamesUpdater:
         data = result.json()
         if not data:
             return False
-        achievements = data['achievementpercentages']['achievements']
+        achievements = data.get('achievementpercentages', {}).get('achievements', [])
         for achievement in achievements:
             Achievement.objects.update_or_create(
                 game_id=game_id,
