@@ -105,7 +105,7 @@ class PlayersUpdater:
         result = requests.get(url)
         data = result.json()
         achievement_map = {}
-        api_achievements = data('playerstats', {}).get('achievements', [])
+        api_achievements = data.get('playerstats', {}).get('achievements', [])
         for achievement in api_achievements:
             achievement_map[achievement['apiname']] = achievement['achieved']
         for achievement in game_achievements:
