@@ -1,5 +1,6 @@
 import string
 from datetime import timedelta
+from time import sleep
 from typing import List, Dict
 import requests
 from django.conf import settings
@@ -74,6 +75,7 @@ class PlayersUpdater:
         playtime_data = data.get('response', {}).get('games', [])
         for playtime in playtime_data:
             PlayersUpdater.__create_player_stats(player_id, playtime['appid'], playtime['playtime_forever'])
+        sleep(1)
         return True
 
     @staticmethod
