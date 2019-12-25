@@ -75,7 +75,6 @@ class PlayersUpdater:
         playtime_data = data.get('response', {}).get('games', [])
         for playtime in playtime_data:
             PlayersUpdater.__create_player_stats(player_id, playtime['appid'], playtime['playtime_forever'])
-        sleep(1)
         return True
 
     @staticmethod
@@ -95,6 +94,7 @@ class PlayersUpdater:
     def __get_player_game_stats(player_id: string, game_id: int) -> List[dict]:
         url = _PLAYER_STATS_API.format(game_id, settings.STEAM_API_KEY, player_id)
         result = requests.get(url)
+        sleep(1)
         if not result:
             return []
         data = result.json()
@@ -119,4 +119,5 @@ class PlayersUpdater:
                         'achieved': achievement_map[achievement.name],
                     }
                 )
+        sleep(1)
 
