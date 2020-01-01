@@ -10,6 +10,7 @@ class Game(models.Model):
     name = models.CharField(max_length=100)
     peak_date = models.DateField(default=date.today)
     max_users = models.IntegerField(default=0)
+    average_playtime = models.DurationField(null=True, blank=True)
 
     def __str__(self):
         return self.name

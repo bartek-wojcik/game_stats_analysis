@@ -1,8 +1,9 @@
 from datetime import date
 import requests
 from django.conf import settings
+from django.db.models import Avg
 
-from app.models import Achievement, GlobalStats, Game
+from app.models import Achievement, GlobalStats, Game, PlayerStats
 
 _ERROR_RESULT = 42
 _CURRENT_PLAYERS_API = 'http://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid={}'
@@ -79,3 +80,11 @@ class GamesUpdater:
             game.peak_date = date.today()
             game.save()
         return True
+
+    @staticmethod
+    def get_average_playtime():
+        stats = PlayerStats.objects.filter(
+            date=date.today()
+        ).values('game').annotate(Avg('time'))
+        for stat in stats:
+            Game.objects.get(pk=stat['game']).update(average_playtime=stat['time'])

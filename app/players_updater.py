@@ -4,6 +4,7 @@ from time import sleep
 from typing import List, Dict
 import requests
 from django.conf import settings
+
 from app.models import Player, Game, PlayerStats, PlayerAchievement, Achievement
 import numpy as np
 import logging
@@ -94,7 +95,7 @@ class PlayersUpdater:
     def __get_player_game_stats(player_id: string, game_id: int) -> List[dict]:
         url = _PLAYER_STATS_API.format(game_id, settings.STEAM_API_KEY, player_id)
         result = requests.get(url)
-        sleep(1)
+        sleep(3)
         if not result:
             return []
         data = result.json()
@@ -119,5 +120,4 @@ class PlayersUpdater:
                         'achieved': achievement_map[achievement.name],
                     }
                 )
-        sleep(1)
-
+        sleep(3)
