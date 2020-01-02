@@ -88,4 +88,5 @@ class GamesUpdater:
         ).values('game').annotate(Avg('time'))
         for stat in stats:
             game = Game.objects.get(pk=stat['game'])
-            game.avarage_playtime = stat['time']
+            game.average_playtime = stat['time']
+            game.save()
