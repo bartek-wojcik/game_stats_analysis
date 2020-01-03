@@ -4,7 +4,6 @@ from time import sleep
 from typing import List, Dict
 import requests
 from django.conf import settings
-
 from app.models import Player, Game, PlayerStats, PlayerAchievement, Achievement
 import numpy as np
 import logging
