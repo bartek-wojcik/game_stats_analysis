@@ -82,3 +82,9 @@ class AchievementsOverTime(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     time = models.DurationField()
     achievements = models.IntegerField()
+
+    def __str__(self):
+        return self.game.__str__() + ' ' + self.player.__str__()
+
+    class Meta:
+        verbose_name_plural = 'Achievements over time'
