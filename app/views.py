@@ -1,12 +1,14 @@
-from django_filters import FilterSet
+from datetime import timedelta
+
+from django.db.models import Max, F, Count, Case, When
 from rest_framework import status
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from app.models import Player, GlobalStats, Game, Achievement, PlayerStats, PlayerAchievement
+from app.models import Player, GlobalStats, Game, Achievement, PlayerStats, PlayerAchievement, AchievementsOverTime
 from app.serializers import PlayerSerializer, GlobalStatsSerializer, GameSerializer, AchievementSerializer, \
-    PlayerStatsSerializer, PlayerAchievementSerializer
+    PlayerStatsSerializer, PlayerAchievementSerializer, AchievementsOverTimeSerializer
 
 
 class RequiredSearchFilter(SearchFilter):
@@ -85,3 +87,13 @@ class PlayerAchievementView(APIView):
         serializer = PlayerAchievementSerializer(achievements, many=True)
         return Response(serializer.data)
 
+
+class AchievementsOverTimeView(APIView):
+
+    def get(self, request):
+        game_filter = request.query_params.get('game', None)
+        if not game_filter:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        achievements = AchievementsOverTime.objects.filter(game=game_filter).exclude(time=timedelta(0))
+        serializer = AchievementsOverTimeSerializer(achievements, many=True)
+        return Response(serializer.data)

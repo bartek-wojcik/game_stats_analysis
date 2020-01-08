@@ -4,7 +4,7 @@ from time import sleep
 from typing import List, Dict
 import requests
 from django.conf import settings
-from app.models import Player, Game, PlayerStats, PlayerAchievement, Achievement
+from app.models import Player, Game, PlayerStats, PlayerAchievement, Achievement, AchievementsOverTime
 import numpy as np
 import logging
 
@@ -39,7 +39,7 @@ class PlayersUpdater:
                 try:
                     PlayersUpdater.__get_player_achievements(player.id, game.id, game_achievements)
                 except Exception as e:
-                    logger.error('Error occurred while fetching player achievement (Player ID: {} Game ID)'.format(player.id, game.id), e)
+                    logger.error('Error occurred while fetching player achievement (Player ID: {} Game ID: {})'.format(player.id, game.id), e)
 
     @staticmethod
     def update_nicknames_and_avatars(list_ids: List[str]) -> bool:
@@ -108,7 +108,10 @@ class PlayersUpdater:
         data = result.json()
         achievement_map = {}
         api_achievements = data.get('playerstats', {}).get('achievements', [])
+        achieved_counter = 0
         for achievement in api_achievements:
+            if achievement['achieved']:
+                achieved_counter += 1
             achievement_map[achievement['apiname']] = achievement['achieved']
         for achievement in game_achievements:
             if achievement.name in achievement_map:
@@ -119,4 +122,20 @@ class PlayersUpdater:
                         'achieved': achievement_map[achievement.name],
                     }
                 )
+        PlayersUpdater.__create_achievements_over_time(player_id, game_id, achieved_counter)
         sleep(3)
+
+    @staticmethod
+    def __create_achievements_over_time(player_id: string, game_id: int, counter: int):
+        if not counter:
+            return
+        last_stat = PlayerStats.objects.filter(player_id=player_id, game_id=game_id).last()
+        if last_stat:
+            AchievementsOverTime.objects.update_or_create(
+                player_id=player_id,
+                game_id=game_id,
+                defaults={
+                    'time': last_stat.time,
+                    'achievements': counter,
+                }
+            )

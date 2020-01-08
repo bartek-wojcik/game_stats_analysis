@@ -75,3 +75,10 @@ class PlayerStats(models.Model):
 
     class Meta:
         verbose_name_plural = 'Player stats'
+
+
+class AchievementsOverTime(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    time = models.DurationField()
+    achievements = models.IntegerField()

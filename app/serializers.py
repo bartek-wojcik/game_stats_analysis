@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
-from app.models import Player, GlobalStats, Game, Achievement, PlayerStats, PlayerAchievement
+from app.models import Player, GlobalStats, Game, Achievement, PlayerStats, PlayerAchievement, AchievementsOverTime
 
 
 class PlayerSerializer(ModelSerializer):
@@ -43,3 +43,9 @@ class PlayerAchievementSerializer(ModelSerializer):
     class Meta:
         model = PlayerAchievement
         fields = ['achievement', 'achieved']
+
+
+class AchievementsOverTimeSerializer(ModelSerializer):
+    class Meta:
+        model = AchievementsOverTime
+        fields = ['time', 'achievements']
